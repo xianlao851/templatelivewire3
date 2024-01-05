@@ -11,13 +11,49 @@
         </div>
 
         @if ($showDiv)
-            <div class="grid grid-cols-2 p-2 mt-2">
+            <div class="grid grid-cols-2 p-4 mt-2">
+                <div class="mt-2">
+                    <div class="join">
+                        <h3 class="text-gray-700 join-item font-base">Name:&nbsp; </h3>
+                        <p class="underline join-item">
+                            @if ($this->selectedEmployees)
+                                {{ $this->selectedEmployees->lastname }}, {{ $selectedEmployees->firstname }}
+                            @endif
+                        </p>
+                    </div>
+                    @if ($this->selectedEmployees)
+                        <div class="mt-2">
+                            <label for="role" class="block mb-2 text-sm text-gray-700 font-base">ROLE
+                                <span class="text-red-500">
+                                    @error('role')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+
+                            </label>
+                            <select wire:model='role'
+                                class="w-full max-w-xs text-xs border-gray-700 select select-bordered select-sm"
+                                id="role">
+                                <option>ROLE</option>
+                                <option value="admin">ADMIN</option>
+                                <option value="doctor">DOCTOR</option>
+                                <option value="nurse">NURSE</option>
+                                <option value="user">USER</option>
+                            </select>
+                        </div>
+                        <div class="mt-6">
+                            <button wire:click='createUser'
+                                class="btn btn-outline btn-xs hover:bg-gray-200">SAVE</button>
+                        </div>
+                    @endif
+                </div>
+
                 <div>
-                    <div class="mt-2 ">
+                    <div class="mt-2">
                         <div class="w-full join">
-                            <input class="w-96 input input-bordered join-item" placeholder="Search..."
-                                wire:model.change='search_employee' />
-                            <button class="rounded-r-full btn join-item">Search</button>
+                            <input class="border-gray-700 w-96 input input-sm input-bordered join-item"
+                                placeholder="Search..." wire:model.change='search_employee' />
+                            <button class="rounded-r-full btn btn-sm join-item">Search</button>
                         </div>
                     </div>
 
@@ -26,11 +62,13 @@
                             @if ($this->getEmployees)
                                 @forelse ($this->getEmployees as $employee)
                                     <li class="p-1 mt-2 rounded-md cursor-pointer bg-stone-300 hover:bg-stone-400"
+                                        wire:key='$employee-{{ $employee->emp_id }}'
                                         wire:click='selectedEmployee({{ $employee->emp_id }})'>
                                         {{ $employee->lastname }},
                                         {{ $employee->firstname }}
                                     </li>
                                 @empty
+                                    No records
                                 @endforelse
                             @endif
                         </ul>
@@ -42,11 +80,6 @@
                     </div>
                 </div>
 
-                <div class="mt-2">
-                    @if ($this->selectedEmployees)
-                        <div>{{ $this->selectedEmployees->lastname }}, {{ $selectedEmployees->firstname }}</div>
-                    @endif
-                </div>
 
             </div>
         @endif

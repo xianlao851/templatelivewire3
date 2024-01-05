@@ -7,28 +7,25 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\HrisEmployee;
 use App\Models\User;
+use Livewire\Attributes\Validate;
 
 class Index extends Component
 {
     use WithPagination;
+    #[Validate('required', message: '*')]
+    public $role;
 
+    public $selectedEmployeeId;
     public $search_employee = '';
     protected $getEmployees;
-    protected $employeelist;
+    //public $employeelist;
     public $selectedEmployees;
     public $showDiv;
-    // public function updatedSearchEmployee()
-    // {
-    //     $columns = ['emp_id', 'lastname', 'firstname'];
 
-
-    //     $this->getEmployees = HrisEmployee::select('emp_id', 'lastname', 'firstname', 'middlename', 'emp_id')->where(function ($query) use ($columns) {
-    //         foreach ($columns as $column) {
-    //             $query->orWhere($column, 'LIKE', '%' . $this->search_employee);
-    //         }
-    //     })->paginate(6, ['*'], 'employeelist');
-    // }
-
+    public function updatedSearchEmployee()
+    {
+        $this->resetPage();
+    }
     public function render()
     {
 
@@ -39,7 +36,7 @@ class Index extends Component
                 foreach ($columns as $column) {
                     $query->orWhere($column, 'LIKE', '%' . $this->search_employee);
                 }
-            })->paginate(6, ['*'], 'employeelist');
+            })->paginate(5, pageName: 'employee-list');
         }
 
 
@@ -53,12 +50,23 @@ class Index extends Component
 
     public function selectedEmployee($getId)
     {
+        $this->selectedEmployeeId = sprintf('%06d', $getId);
         $this->selectedEmployees = HrisEmployee::where('emp_id', sprintf('%06d', $getId))->first();
-        $this->resetExcept('selectedEmployees', 'getEmployees', 'showDiv', 'search_employee', 'employeelist');
     }
 
     public function openDiv()
     {
         $this->showDiv = !$this->showDiv;
+        $this->resetExcept('showDiv');
+    }
+
+    public function createUser()
+    {
+        $this->validate(
+            [
+                'role' => 'required',
+                'selectedEmployeeId ' => 'required'
+            ]
+        );
     }
 }
