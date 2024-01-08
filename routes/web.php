@@ -1,8 +1,12 @@
 <?php
 
-use App\Livewire\Admin\Index as AdminIndex;
+//use App\Livewire\Admin\Index as AdminIndex;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Admin\Index;
+use App\Livewire\Admin\Permission;
+use App\Livewire\Admin\Roles;
+use Laravel\Jetstream\Rules\Role;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -36,10 +40,20 @@ Route::middleware([
 });
 
 
+// Route::middleware([
+//     'auth:sanctum', 'role:admin',
+//     config('jetstream.auth_session'),
+//     'verified',
+// ])->group(function () {
+//     Route::get('/admin_index', Index::class)->name('admin_index');
+// });
+
 Route::middleware([
     'auth:sanctum', 'role:admin',
     config('jetstream.auth_session'),
     'verified',
-])->group(function () {
-    Route::get('/admin_index', AdminIndex::class)->name('admin_index');
+])->name('admin.')->prefix('admin')->group(function () {
+    Route::get('/index', Index::class)->name('index');
+    Route::get('/permission', Permission::class)->name('permission');
+    Route::get('/roles', Roles::class)->name('roles');
 });

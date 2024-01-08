@@ -18,7 +18,6 @@ class Index extends Component
     public $selectedEmployeeId;
     public $search_employee = '';
     protected $getEmployees;
-    //public $employeelist;
     public $selectedEmployees;
     public $showDiv;
 
@@ -58,15 +57,23 @@ class Index extends Component
     {
         $this->showDiv = !$this->showDiv;
         $this->resetExcept('showDiv');
+        $this->resetPage(pageName: 'employee-list');
     }
 
     public function createUser()
     {
+        //dd($this->selectedEmployeeId);
         $this->validate(
             [
                 'role' => 'required',
-                'selectedEmployeeId ' => 'required'
+                //'selectedEmployeeId ' => 'required'
             ]
         );
+    }
+    public function reset_values()
+    {
+        $this->resetPage(pageName: 'employee-list');
+        $this->resetExcept('showDiv');
+        //return redirect()->to('/admin_index');
     }
 }
