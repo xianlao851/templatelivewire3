@@ -91,7 +91,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Role</th>
+                            <th>Email</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -100,9 +100,14 @@
                         @forelse ($users as $user)
                             <tr>
                                 <td class="uppercase">{{ $user->name }}</td>
-                                <td class="uppercase">Empty</td>
+                                <td class="uppercase">{{ $user->email }}</td>
                                 <td class="text-green-500 uppercase">Empty</td>
-                                <td class="uppercase">Empty</td>
+                                <td class="uppercase">
+                                    <label class="btn btn-xs btn-primary" wire:key="$user-{{ $user->id }}"
+                                        wire:click="viewRole({{ $user->id }})" for="view_role">ROLES</label>
+                                    <label class="btn btn-xs btn-success">PERMISSION</label>
+                                    <label class="btn btn-xs btn-accent">DELETE</label>
+                                </td>
                             @empty
                             </tr>
                         @endforelse
@@ -183,8 +188,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
                 <div class="modal-action">
                     <label for="addUser" class="btn btn-sm" wire:click='reset_values'>Close!</label>
@@ -192,7 +195,72 @@
             </div>
         </div><!-- Add user end-->
 
-
+        <!-- view roles-->
+        <input type="checkbox" id="view_role" class="modal-toggle" />
+        <div class="modal" role="dialog">
+            <div class="max-w-2xl modal-box">
+                <div class="relative">
+                    <div class="join">
+                        <h3 class="text-gray-700 join-item font-base">Name:&nbsp; </h3>
+                        <p class="underline uppercase join-item">
+                            @if ($this->getUser)
+                                {{ $this->getUser->name }}
+                            @endif
+                        </p>
+                    </div>
+                    <div class="absolute top-0 right-0"><label class="mr-1 join-item">ROLES</label>
+                    </div>
+                </div>
+                <div class="mt-1 border-b-2"></div>
+                <div class="relative mt-2">
+                    <div class="overflow-x-auto">
+                        <table class="table table-xs w-60">
+                            <thead>
+                                <tr>
+                                    <th>ROLEs</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($this->getUserRoles)
+                                    @forelse ($this->getUserRoles as $userRole)
+                                        <tr>
+                                            <td> {{ $userRole->name }}</td>
+                                            <td>
+                                                <label class="btn btn-warning btn-xs"
+                                                    wire:key='$userRole-{{ $userRole->id }}'
+                                                    wire:click="revokeRole('{{ $userRole->name }}')">REVOKE
+                                                </label>
+                                            </td>
+                                        @empty
+                                        </tr>
+                                    @endforelse
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="absolute top-0 right-0 join">
+                        <div class="join">
+                            <select type="text" id="role"
+                                class="text-sm w-[210px] input input-sm input-bordered join-item" wire:model='role'>
+                                <option class="uppercase">SELECT ROLE</option>
+                                @if ($this->roles)
+                                    @forelse ($this->roles as $role)
+                                        <option value="{{ $role->name }}"> {{ $role->name }}</option>
+                                    @empty
+                                    @endforelse
+                                @endif
+                            </select>
+                            <button class="rounded-r-full btn btn-sm btn-success join-item" wire:click='createRole'><i
+                                    class="las la-plus la-2x"></i></button>
+                        </div>
+                    </div>
+                </div> <!-- table-->
+                <div class="modal-action">
+                    <label for="view_role" class="btn btn-sm">Close!</label>
+                </div>
+            </div>
+        </div><!-- view roles end-->
     </div><!----->
 
 </div>

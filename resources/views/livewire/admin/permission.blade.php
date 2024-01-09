@@ -27,8 +27,13 @@
                                 <label class="btn btn-xs btn-neutral" wire:key='$permission-{{ $permission->id }}'
                                     wire:click="editPermission('{{ $permission->id }}','{{ $permission->name }}')"
                                     for="edit_permission">EDIT</label>
+
                                 <label class="btn btn-xs btn-warning" wire:key='$permission-{{ $permission->id }}'
                                     onclick="deletePermission({{ $permission->id }})">DELETE</label>
+
+                                <label class="btn btn-xs btn-success" wire:key='$permission-{{ $permission->id }}'
+                                    wire:click="assignRole('{{ $permission->id }}','{{ $permission->name }}')"
+                                    for="assign_role">ASSIGN ROLE</label>
                             @empty
                             <td>Empty</td>
                         </tr>
@@ -83,6 +88,73 @@
                 </div>
             </div>
         </div><!--edit permission-->
+
+        <input type="checkbox" id="assign_role" class="modal-toggle" /> <!--assign role-->
+        <div class="modal" role="dialog">
+            <div class="modal-box max-w-96">
+                <div class="join">
+                    <h3 class="text-gray-700 join-item font-base">Role:&nbsp; </h3>
+                    <p class="underline join-item">
+                        @if ($this->getPermission)
+                            {{ $this->getPermission->name }}
+                        @endif
+                    </p>
+                </div>
+                <div class="mt-2">
+                    <label for="permission" class="block mb-2 text-sm text-gray-700 font-base">Permission
+                        <span class="text-red-500">
+                            @error('role')
+                                {{ $message }}
+                            @enderror
+                        </span>
+                    </label>
+                    <div class="join">
+                        <select type="text" id="role"
+                            class="text-sm w-[270px] input input-sm input-bordered join-item" wire:model="role">
+                            <option class="uppercase">SELECT ROLE</option>
+                            @forelse ($this->roles as $role)
+                                <option class="uppercase" value="{{ $role->name }}"> {{ $role->name }}</option>
+                            @empty
+                            @endforelse
+                        </select>
+                        <button class="rounded-r-full btn btn-sm btn-success join-item"
+                            wire:click='createPermissionRole'><i class="las la-plus la-2x"></i></button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <h4 class="text-gray-500 border-b-2">Permissions</h4>
+                    <div class="overflow-x-auto">
+                        <table class="table table-xs">
+                            <thead>
+                                <tr class="uppercase">
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($this->getPermission)
+                                    @forelse ($this->getPermission->roles as $permission_role)
+                                        <tr class="uppercase">
+                                            <td>{{ $permission_role->name }}</td>
+                                            <td><label class="btn btn-xs btn-warning"
+                                                    wire:click="revokeRole('{{ $permission_role->name }}')">Revoke</label>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td class="text-sm">No permissions</td>
+                                        </tr>
+                                    @endforelse
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-action">
+                    <label wire:click='resetValues' for="assign_role" class="btn btn-sm">Close!</label>
+                </div>
+            </div>
+        </div><!--assign role-->
 
         <!--Modals-->
     </div>

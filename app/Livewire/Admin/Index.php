@@ -8,17 +8,28 @@ use Livewire\WithPagination;
 use App\Models\HrisEmployee;
 use App\Models\User;
 use Livewire\Attributes\Validate;
+use Spatie\Permission\Models\Role;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class Index extends Component
 {
+    use LivewireAlert;
     use WithPagination;
+
     #[Validate('required', message: '*')]
-    public $role;
+    public $role = '';
+
+    public $search_employee = '';
+
+    public $roles;
 
     public $selectedEmployeeId;
-    public $search_employee = '';
-    protected $getEmployees;
     public $selectedEmployees;
+
+    protected $getEmployees;
+    public $getUser;
+    public $getUserRoles;
+    public $getUserId;
     public $showDiv;
 
     public function updatedSearchEmployee()
@@ -40,10 +51,11 @@ class Index extends Component
 
 
         $users = User::all();
-
+        $this->roles = Role::all();
         return view('livewire.admin.index', [
             'users' => $users,
-            //'users' => HrisEmployee::search($this->search_employee)->get(),
+            //'getUserRoles' => $this->getUserRoles
+
         ]);
     }
 
@@ -69,6 +81,36 @@ class Index extends Component
                 //'selectedEmployeeId ' => 'required'
             ]
         );
+    }
+
+    public function viewRole($getId)
+    {
+        $this->getUserId = $getId;
+        $this->getUser = User::where('id', $getId)->first();
+        $this->getUserRoles = $this->getUser->roles;
+    }
+
+    public function createRole()
+    {
+        $this->validate([
+            'role' => 'required'
+        ]);
+        if ($this->getUser->hasRole($this->role)) {
+            $this->alert('warning', 'Role already exist');
+        } else {
+            $this->getUser->assignRole($this->role);
+            $this->alert('success', 'Role created');
+        }
+        //$this->getUserRoles = $this->getUser->fresh();
+        $this->getUser = User::where('id',  $this->getUserId)->first();
+        $this->getUserRoles = $this->getUser->roles;
+        dd($this->getUserRoles);
+    }
+    public function revokeRole($roleName)
+    {
+        $this->getUser->removeRole($roleName);
+        $this->alert('success', 'Role revoked');
+        $this->getUserRoles = $this->getUser->roles->fresh();
     }
     public function reset_values()
     {
